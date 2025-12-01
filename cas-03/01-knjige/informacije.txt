@@ -1,0 +1,7 @@
+Python:
+rbr: 2
+autor: Frederick Lundh
+izdavac: O'Reilly & Associates
+god_izdanja: 2001
+valuta: eur
+cena: 50

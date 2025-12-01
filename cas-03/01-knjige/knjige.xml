@@ -1,0 +1,28 @@
+<knjiga rbr="1">
+    <autor>Filip Maric</autor>
+    <naslov>Yacc</naslov>
+    <izdavac>Matematicki fakultet</izdavac>
+    <god_izdanja>2004</god_izdanja>
+    <cena valuta="rsd">1000</cena>
+</knjiga>
+<knjiga rbr="2">
+    <naslov>Python</naslov>
+    <autor>Frederick Lundh</autor>
+    <izdavac>O'Reilly & Associates</izdavac>
+    <god_izdanja>2001</god_izdanja>
+    <cena valuta="eur">50</cena>
+</knjiga>
+<knjiga rbr="3">
+    <god_izdanja>1976</god_izdanja>
+    <autor>Edsger W. Dijkstra</autor>
+    <naslov>A Discipline of Programming</naslov>
+    <izdavac>Prentice Hall</izdavac>
+    <cena valuta="eur">30</cena>
+</knjiga>
+<knjiga rbr="4">
+    <naslov>Harry Potter and the Philosopher's Stone</naslov>
+    <izdavac>Bloomsbury Publishing</izdavac>
+    <god_izdanja>1997</god_izdanja>
+    <cena valuta="eur">25</cena>
+    <autor>J. K. Rowling</autor>
+</knjiga>
