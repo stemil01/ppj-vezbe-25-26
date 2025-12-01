@@ -10,4 +10,4 @@
 
 [ppj-stranica]: https://www.prevodioci.matf.bg.ac.rs/PrevodjenjeProgramskihJezika.html
 [stefan-ppj]: https://poincare.matf.bg.ac.rs/~stefan.milenkovic/ppj-25-26/
-[milica-github]: https://github.com/milicakarlicic/PPJ/tree/main/cas01
+[milica-github]: https://github.com/milicakarlicic/PPJ/
