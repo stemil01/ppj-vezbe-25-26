@@ -1,0 +1,163 @@
+%{
+    #include <iostream>
+    #include <cstdlib>
+    #include <map>
+    #include "kompleksan_broj.hpp"
+
+    extern int yylex();
+    extern int yylex_destroy();
+
+    void yyerror(const std::string &poruka) {
+        std::cerr << poruka << std::endl;
+        exit(EXIT_FAILURE);
+    }
+
+    std::map<std::string, KompleksanBroj *> promenljive;
+
+    void deinit() {
+        for (auto p : promenljive) {
+            delete p.second;
+        }
+    }
+%}
+
+%union {
+    KompleksanBroj *kompleksan_broj;
+    double realan_broj;
+    std::string *niska;
+}
+
+%type<kompleksan_broj> izraz kompleksan_broj
+
+%left '+' '-'
+%left '*' '/'
+%right '~' UMINUS
+
+%token PRINT DEF RE IM ARG MOD
+%token<niska> ID
+%token<realan_broj> BROJ
+
+%%
+
+niz_naredbi
+    : niz_naredbi naredba {}
+    | naredba {}
+    ;
+
+naredba
+    : PRINT '(' izraz ')' ';' {
+        std::cout << *$3 << std::endl;
+        delete $3;
+    }
+    | DEF ID ';' {
+        if (promenljive.find(*$2) != promenljive.end()) {
+            std::cerr << "promenljiva " << *$2 << " je vec deklarisana" << std::endl;
+            exit(EXIT_FAILURE);
+        }
+        promenljive[*$2] = new KompleksanBroj();
+        delete $2;
+    }
+    | DEF ID '=' izraz ';' {
+        if (promenljive.find(*$2) != promenljive.end()) {
+            std::cerr << "promenljiva " << *$2 << " je vec deklarisana" << std::endl;
+            exit(EXIT_FAILURE);
+        }
+        promenljive[*$2] = $4;
+        delete $2;
+    }
+    | ID '=' izraz ';' {
+        if (promenljive.find(*$1) == promenljive.end()) {
+            std::cerr << "promenljiva " << *$1 << " nije deklarisana" << std::endl;
+            exit(EXIT_FAILURE);
+        }
+        else {
+            delete promenljive[*$1];
+        }
+        promenljive[*$1] = $3;
+        delete $1;
+    }
+    ;
+
+izraz
+    : izraz '+' izraz {
+        $$ = new KompleksanBroj(*$1 + *$3);
+        delete $1;
+        delete $3;
+    }
+    | izraz '-' izraz {
+        $$ = new KompleksanBroj(*$1 - *$3);
+        delete $1;
+        delete $3;
+    }
+    | izraz '*' izraz {
+        $$ = new KompleksanBroj(*$1 * *$3);
+        delete $1;
+        delete $3;
+    }
+    | izraz '/' izraz {
+        $$ = new KompleksanBroj(*$1 / *$3);
+        delete $1;
+        delete $3;
+    }
+    | '-' izraz %prec UMINUS {
+        $$ = new KompleksanBroj(- *$2);
+        delete $2;
+    }
+    | '(' izraz ')' {
+        $$ = $2;
+    }
+    | '~' izraz {
+        $$ = new KompleksanBroj(~ *$2);
+        delete $2;
+    }
+    | RE '(' izraz ')' {
+        $$ = new KompleksanBroj($3->get_re());
+        delete $3;
+    }
+    | IM '(' izraz ')' {
+        $$ = new KompleksanBroj($3->get_im());
+        delete $3;
+    }
+    | ARG '(' izraz ')' {
+        $$ = new KompleksanBroj($3->arg());
+        delete $3;
+    }
+    | MOD '(' izraz ')' {
+        $$ = new KompleksanBroj($3->mod());
+        delete $3;
+    }
+    | ID {
+        if (promenljive.find(*$1) == promenljive.end()) {
+            std::cerr << "promenljiva " << *$1 << " nije deklarisana" << std::endl;
+            exit(EXIT_FAILURE);
+        }
+        $$ = new KompleksanBroj(*promenljive[*$1]);
+        delete $1;
+    }
+    | kompleksan_broj {
+        $$ = $1;
+    }
+    ;
+
+kompleksan_broj
+    : BROJ {
+        $$ = new KompleksanBroj($1);
+    }
+    | '<' BROJ '>' {
+        $$ = new KompleksanBroj($2);
+    }
+    | '<' BROJ ',' BROJ '>' {
+        $$ = new KompleksanBroj($2, $4);
+    }
+    ;
+
+%%
+
+int main() {
+    if (yyparse() == 0) {
+        std::cout << "prihvaceno" << std::endl;
+    }
+    deinit();
+    yylex_destroy();
+    return 0;
+}

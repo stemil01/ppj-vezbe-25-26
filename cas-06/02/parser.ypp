@@ -1,0 +1,85 @@
+%{
+    #include <iostream>
+    #include <cstdlib>
+    #include <map>
+
+    extern int yylex();
+    extern int yylex_destroy();
+
+    int yyerror(const std::string &poruka) {
+        std::cerr << poruka << std::endl;
+        exit(EXIT_FAILURE);
+    }
+
+    std::map<std::string, int> promenljive;
+%}
+
+%union {
+    int ceo_broj;
+    std::string *niska;
+}
+
+%token PRINT
+%token<niska> ID
+%token<ceo_broj> BROJ
+
+%type<ceo_broj> izraz
+
+%left '+' '-'
+%left '*' '/'
+%right UMINUS
+
+%%
+
+niz_naredbi
+    : niz_naredbi naredba {}
+    | naredba {}
+    ;
+
+naredba
+    : ID '=' izraz ';' {
+        promenljive[*$1] = $3;
+        delete $1;
+    }
+    | PRINT '(' izraz ')' ';' {
+        std::cout << $3 << std::endl;
+    }
+    ;
+
+izraz
+    : izraz '+' izraz {
+        $$ = $1 + $3;
+    }
+    | izraz '-' izraz {
+        $$ = $1 - $3;
+    }
+    | izraz '*' izraz {
+        $$ = $1 * $3;
+    }
+    | izraz '/' izraz {
+        $$ = $1 / $3;
+    }
+    | '-' izraz %prec UMINUS {
+        $$ = - $2;
+    }
+    | '(' izraz ')' {
+        $$ = $2;
+    }
+    | BROJ {
+        $$ = $1;
+    }
+    | ID {
+        $$ = promenljive[*$1];
+        delete $1;
+    }
+    ;
+
+%%
+
+int main() {
+    if (yyparse() == 0) {
+        std::cout << "prihvaceno" << std::endl;
+    }
+    yylex_destroy();
+    return 0;
+}
