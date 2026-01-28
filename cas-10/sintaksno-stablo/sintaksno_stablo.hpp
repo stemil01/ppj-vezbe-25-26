@@ -3,7 +3,6 @@
 
 #include "funkcija.hpp"
 #include "tabela_simbola.hpp"
-#include <mutex>
 #include <vector>
 
 // -------------------------------
