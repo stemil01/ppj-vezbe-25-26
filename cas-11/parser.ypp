@@ -1,0 +1,68 @@
+%{
+    #include <iostream>
+    #include <cstdlib>
+
+    extern int yylex();
+    extern int yylex_destroy();
+
+    void yyerror(const std::string &poruka) {
+        std::cerr << poruka << std::endl;
+        exit(EXIT_FAILURE);
+    }
+%}
+
+%token BEGIN_TOKEN END_TOKEN
+%token EQ PRINT IF THEN ELSE WHILE DO
+%token ID
+%token BROJ
+
+%left '<' '>'
+%left '+' '-'
+%precedence THEN
+%precedence ELSE
+
+%%
+
+program
+    : BEGIN_TOKEN niz_naredbi END_TOKEN '.' {}
+    ;
+
+niz_naredbi
+    : niz_naredbi naredba {}
+    | naredba {}
+    ;
+
+blok
+    : naredba {}
+    | BEGIN_TOKEN niz_naredbi END_TOKEN {}
+    ;
+
+naredba
+    : ID EQ izraz ';' {}
+    | PRINT '(' izraz ')' ';' {}
+    | IF izraz THEN blok {}
+    | IF izraz THEN blok ELSE blok {}
+    | WHILE izraz DO blok {}
+    ;
+
+izraz
+    : izraz '+' izraz {}
+    | izraz '-' izraz {}
+    | izraz '<' izraz {}
+    | izraz '>' izraz {}
+    | '(' izraz ')' {}
+    | BROJ {}
+    | ID {}
+    ;
+
+
+%%
+
+int main() {
+    if (yyparse() == 0) {
+        std::cout << "prihvaceno" << std::endl;
+    }
+
+    yylex_destroy();
+    return 0;
+}
