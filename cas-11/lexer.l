@@ -3,6 +3,7 @@
 %{
     #include <iostream>
     #include <cstdlib>
+    #include "sintaksno_stablo.hpp"
     #include "parser.tab.hpp"
 %}
 
@@ -45,10 +46,12 @@ do {
 }
 
 [_a-zA-Z][_a-zA-Z0-9]* {
+    yylval.niska = new std::string(yytext);
     return ID;
 }
 
 [+-]?(0|[1-9][0-9]*) {
+    yylval.ceo_broj = atoi(yytext);
     return BROJ;
 }
 

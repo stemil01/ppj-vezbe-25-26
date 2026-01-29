@@ -1,20 +1,26 @@
-parser: parser.tab.o lex.yy.o tabela_simbola.o
-	g++ -Wall -Wextra parser.tab.o lex.yy.o tabela_simbola.o -o parser
+CC = g++
+CFLAGS = -Wall -Wextra
+
+parser: parser.tab.o lex.yy.o tabela_simbola.o sintaksno_stablo.o
+	$(CC) $(CFLAGS) $^ -o $@
 
 parser.tab.o: parser.tab.cpp parser.tab.hpp
-	g++ -Wall -Wextra -c parser.tab.cpp -o parser.tab.o
+	$(CC) $(CFLAGS) -c $< -o $@
 
 lex.yy.o: lex.yy.c
-	g++ -Wall -Wextra -c lex.yy.c -o lex.yy.o
+	$(CC) $(CFLAGS) -c $< -o $@
 
 lex.yy.c: lexer.l parser.tab.hpp
-	flex --nounput lexer.l
+	flex --nounput $<
 
 parser.tab.cpp parser.tab.hpp: parser.ypp
-	bison --header parser.ypp
+	bison --header $<
 
 tabela_simbola.o: tabela_simbola.cpp tabela_simbola.hpp
-	g++ -Wall -Wextra -c tabela_simbola.cpp -o tabela_simbola.o
+	$(CC) $(CFLAGS) -c $< -o $@
+
+sintaksno_stablo.o: sintaksno_stablo.cpp sintaksno_stablo.hpp
+	$(CC) $(CFLAGS) -c $< -o $@
 
 .PHONY: clean
 clean:
